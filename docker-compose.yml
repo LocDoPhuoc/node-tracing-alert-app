@@ -1,0 +1,27 @@
+networks:
+  backend:
+    driver: bridge
+services:    
+  redis:
+    image: redis
+    container_name: queue
+    expose:
+      - 6379
+    networks:
+      - backend    
+  app:
+    build: ./
+    volumes:
+      - ./:/var/www/app
+    links:
+      - redis
+    ports:
+      - 3000:3000
+    environment:
+      # - REDIS_URL=redis://queue
+      - NODE_ENV=development
+      - PORT=3000
+    networks:
+      - backend  
+    command:
+      sh -c 'npm i && node app.js'
